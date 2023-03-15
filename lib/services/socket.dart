@@ -5,28 +5,29 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 class SocketService with ChangeNotifier {
   // ignore: prefer_final_fields
   ServerStatus _serverStatus = ServerStatus.Connecting;
+  late IO.Socket _socket;
 
-  get serverStatus => this._serverStatus;
-
+  ServerStatus get serverStatus => this._serverStatus;
+  IO.Socket get socket => this._socket;
   SocketService() {
     this._initConfig();
   }
   void _initConfig() {
-    IO.Socket socket = IO.io('http://localhost:3001', {
+    this._socket = IO.io('http://localhost:3001', {
       'transports': ['websocket'],
       'autoConnect': true,
     });
-    socket.onConnect((_) {
+    _socket.onConnect((_) {
       this._serverStatus = ServerStatus.Online;
       notifyListeners();
     });
 
-    socket.onDisconnect((_) {
+    _socket.onDisconnect((_) {
       this._serverStatus = ServerStatus.Offline;
       notifyListeners();
     });
-    socket.on('nuevo-mensaje', (payload) {
-      print('nuevo mensaje: $payload');
-    });
+    // socket.on('nuevo-mensaje', (payload) {
+    //   print('nuevo mensaje: $payload');
+    // });
   }
 }
