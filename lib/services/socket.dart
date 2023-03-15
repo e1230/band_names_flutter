@@ -6,6 +6,8 @@ class SocketService with ChangeNotifier {
   // ignore: prefer_final_fields
   ServerStatus _serverStatus = ServerStatus.Connecting;
 
+  get serverStatus => this._serverStatus;
+
   SocketService() {
     this._initConfig();
   }
@@ -15,9 +17,13 @@ class SocketService with ChangeNotifier {
       'autoConnect': true,
     });
     socket.onConnect((_) {
-      print('connect');
+      this._serverStatus = ServerStatus.Online;
+      notifyListeners();
     });
 
-    socket.onDisconnect((_) => print('disconnect'));
+    socket.onDisconnect((_) {
+      this._serverStatus = ServerStatus.Offline;
+      notifyListeners();
+    });
   }
 }
