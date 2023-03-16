@@ -88,8 +88,8 @@ class _HomePageState extends State<HomePage> {
     final socketService = Provider.of<SocketService>(context, listen: false);
     return Dismissible(
       direction: DismissDirection.startToEnd,
-      onDismissed: ((direction) {
-        //todo: LLamar borrado en el server
+      onDismissed: ((_) {
+        socketService.socket.emit('delete-band', {'id': band.id});
       }),
       background: Container(
         padding: EdgeInsets.only(left: 8),
@@ -173,12 +173,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   void addBandToList(String name) {
+    final socketService = Provider.of<SocketService>(context, listen: false);
     if (name.length > 1) {
-      //? algo para agregar
-      this
-          .bands
-          .add(new Band(id: DateTime.now().toString(), name: name, votes: 0));
-      setState(() {});
+      socketService.socket.emit('add-band', {'name': name});
     }
     Navigator.pop(context);
   }
