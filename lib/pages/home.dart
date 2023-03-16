@@ -5,6 +5,7 @@ import 'package:band_names/services/enums.dart';
 import 'package:band_names/services/socket.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pie_chart/pie_chart.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -70,10 +71,17 @@ class _HomePageState extends State<HomePage> {
           )
         ],
       ),
-      body: ListView.builder(
-        itemBuilder: (BuildContext context, int index) =>
-            _bandTile(bands[index]),
-        itemCount: bands.length,
+      body: Column(
+        children: [
+          _showGraph(),
+          Expanded(
+            child: ListView.builder(
+              itemBuilder: (BuildContext context, int index) =>
+                  _bandTile(bands[index]),
+              itemCount: bands.length,
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
@@ -177,5 +185,13 @@ class _HomePageState extends State<HomePage> {
       socketService.socket.emit('add-band', {'name': name});
     }
     Navigator.pop(context);
+  }
+
+  PieChart _showGraph() {
+    Map<String, double> dataMap = new Map();
+    bands.forEach((band) {
+      dataMap.putIfAbsent(band.name, () => band.votes.toDouble());
+    });
+    return PieChart(dataMap: dataMap);
   }
 }
